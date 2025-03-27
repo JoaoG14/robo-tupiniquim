@@ -24,6 +24,16 @@ namespace RoboTupiniquim.ConsoleApp
             int y1 = int.Parse(posicaoInicial1[1]);
             char orientacao1 = char.Parse(posicaoInicial1[2]);
             
+            // Validação da posição inicial do Robô 1
+            while (!area.PosicaoValida(x1, y1))
+            {
+                Console.WriteLine("Posição fora dos limites da área! Digite novamente a posição inicial (X Y O):");
+                posicaoInicial1 = Console.ReadLine().Split(' ');
+                x1 = int.Parse(posicaoInicial1[0]);
+                y1 = int.Parse(posicaoInicial1[1]);
+                orientacao1 = char.Parse(posicaoInicial1[2]);
+            }
+            
             Console.WriteLine("Instruções para o Robô 1:");
             string instrucoes1 = Console.ReadLine();
             
@@ -38,6 +48,16 @@ namespace RoboTupiniquim.ConsoleApp
             int x2 = int.Parse(posicaoInicial2[0]);
             int y2 = int.Parse(posicaoInicial2[1]);
             char orientacao2 = char.Parse(posicaoInicial2[2]);
+            
+            // Validação da posição inicial do Robô 2
+            while (!area.PosicaoValida(x2, y2))
+            {
+                Console.WriteLine("Posição fora dos limites da área! Digite novamente a posição inicial (X Y O):");
+                posicaoInicial2 = Console.ReadLine().Split(' ');
+                x2 = int.Parse(posicaoInicial2[0]);
+                y2 = int.Parse(posicaoInicial2[1]);
+                orientacao2 = char.Parse(posicaoInicial2[2]);
+            }
             
             Console.WriteLine("Instruções para o Robô 2:");
             string instrucoes2 = Console.ReadLine();
