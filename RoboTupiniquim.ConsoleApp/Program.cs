@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace RoboTupiniquim.ConsoleApp
 {
@@ -6,53 +7,51 @@ namespace RoboTupiniquim.ConsoleApp
     {
         static void Main(string[] args)
         {
+            // Cabeçalho do programa
             Console.WriteLine("=============================================");
             Console.WriteLine("| Robô Tupiniquim - Simulador de Exploração |");
             Console.WriteLine("=============================================");
             
-            (int areaX, int areaY) = Area.LerDimensoesValidas();
+            // Configuração da área
+            Area area = Area.LerDimensoes();
             
+            // Lista para armazenar os robôs
+            List<Robo> robos = new List<Robo>();
+            
+            // Primeiro robô
             Console.WriteLine("\nRobô 1");
-            (int x1, int y1, char orientacao1) = Robo.LerPosicaoValida(areaX, areaY, "Robô 1");
-            
-            Console.WriteLine("Instruções para o Robô 1:");
+            Robo robo1 = Robo.LerPosicaoInicial("Robô 1", area);
             string instrucoes1 = Robo.LerInstrucoesValidas();
+            robo1.ExecutarInstrucoes(instrucoes1, area);
+            robos.Add(robo1);
             
-            bool robo1DentroLimites = Robo.ExecutarInstrucoes(ref x1, ref y1, ref orientacao1, instrucoes1, areaX, areaY);
-            
-            string posicaoFinal1 = $"{x1} {y1} {orientacao1}";
-            
+            // Segundo robô
             Console.WriteLine("\nRobô 2");
-            (int x2, int y2, char orientacao2) = Robo.LerPosicaoValida(areaX, areaY, "Robô 2");
-            
-            Console.WriteLine("Instruções para o Robô 2:");
+            Robo robo2 = Robo.LerPosicaoInicial("Robô 2", area);
             string instrucoes2 = Robo.LerInstrucoesValidas();
+            robo2.ExecutarInstrucoes(instrucoes2, area);
+            robos.Add(robo2);
             
-            bool robo2DentroLimites = Robo.ExecutarInstrucoes(ref x2, ref y2, ref orientacao2, instrucoes2, areaX, areaY);
-            
-            string posicaoFinal2 = $"{x2} {y2} {orientacao2}";
-            
+            // Exibição dos resultados
             Console.WriteLine("\nResultados:");
-            if (robo1DentroLimites)
+            
+            for (int i = 0; i < robos.Count; i++)
             {
-                Console.WriteLine("Posição final do Robô 1: " + posicaoFinal1);
-            }
-            else
-            {
-                Console.WriteLine("Robô 1 ultrapassou os limites da área definida.");
-                Console.WriteLine("Última posição válida: " + posicaoFinal1);
+                Robo robo = robos[i];
+                string nomeRobo = $"Robô {i + 1}";
+                
+                if (robo.DentroLimites)
+                {
+                    Console.WriteLine($"Posição final do {nomeRobo}: {robo}");
+                }
+                else
+                {
+                    Console.WriteLine($"{nomeRobo} ultrapassou os limites da área definida.");
+                    Console.WriteLine($"Última posição válida: {robo}");
+                }
             }
             
-            if (robo2DentroLimites)
-            {
-                Console.WriteLine("Posição final do Robô 2: " + posicaoFinal2);
-            }
-            else
-            {
-                Console.WriteLine("Robô 2 ultrapassou os limites da área definida.");
-                Console.WriteLine("Última posição válida: " + posicaoFinal2);
-            }
-            
+            Console.WriteLine("\nPressione qualquer tecla para encerrar...");
             Console.ReadKey();
         }
     }

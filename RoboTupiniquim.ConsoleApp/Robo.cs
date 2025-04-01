@@ -2,15 +2,126 @@ using System;
 
 namespace RoboTupiniquim.ConsoleApp
 {
-    public static class Robo
+    public class Robo
     {
-        public static (int x, int y, char orientacao) LerPosicaoValida(int areaX, int areaY, string nomeRobo)
+        public string Nome { get; private set; }
+        public int PosicaoX { get; private set; }
+        public int PosicaoY { get; private set; }
+        public char Orientacao { get; private set; }
+        public bool DentroLimites { get; private set; }
+
+        public Robo(string nome, int posicaoX, int posicaoY, char orientacao)
+        {
+            Nome = nome;
+            PosicaoX = posicaoX;
+            PosicaoY = posicaoY;
+            Orientacao = orientacao;
+            DentroLimites = true;
+        }
+
+        public void ExecutarInstrucoes(string instrucoes, Area area)
+        {
+            foreach (char instrucao in instrucoes)
+            {
+                switch (instrucao)
+                {
+                    case 'M':
+                        MoverParaFrente(area);
+                        break;
+                    case 'E':
+                        VirarEsquerda();
+                        break;
+                    case 'D':
+                        VirarDireita();
+                        break;
+                }
+            }
+        }
+
+        private void MoverParaFrente(Area area)
+        {
+            int novoX = PosicaoX;
+            int novoY = PosicaoY;
+            
+            switch (Orientacao)
+            {
+                case 'N':
+                    novoY++;
+                    break;
+                case 'S':
+                    novoY--;
+                    break;
+                case 'L':
+                    novoX++;
+                    break;
+                case 'O':
+                    novoX--;
+                    break;
+            }
+            
+            bool posicaoValida = area.PosicaoValida(novoX, novoY);
+            
+            if (posicaoValida)
+            {
+                PosicaoX = novoX;
+                PosicaoY = novoY;
+            }
+            else
+            {
+                DentroLimites = false;
+            }
+        }
+        
+        private void VirarEsquerda()
+        {
+            switch (Orientacao)
+            {
+                case 'N':
+                    Orientacao = 'O';
+                    break;
+                case 'O':
+                    Orientacao = 'S';
+                    break;
+                case 'S':
+                    Orientacao = 'L';
+                    break;
+                case 'L':
+                    Orientacao = 'N';
+                    break;
+            }
+        }
+        
+        private void VirarDireita()
+        {
+            switch (Orientacao)
+            {
+                case 'N':
+                    Orientacao = 'L';
+                    break;
+                case 'L':
+                    Orientacao = 'S';
+                    break;
+                case 'S':
+                    Orientacao = 'O';
+                    break;
+                case 'O':
+                    Orientacao = 'N';
+                    break;
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"{PosicaoX} {PosicaoY} {Orientacao}";
+        }
+
+        public static Robo LerPosicaoInicial(string nome, Area area)
         {
             bool posicaoValida = false;
             int x = 0, y = 0;
             char orientacao = ' ';
             
-            Console.WriteLine("Posição inicial e orientação (X Y O):");
+            Console.WriteLine($"Posição inicial e orientação do {nome} (X Y O):");
             
             while (!posicaoValida)
             {
@@ -39,13 +150,13 @@ namespace RoboTupiniquim.ConsoleApp
                     
                     orientacao = char.Parse(posicaoInicial[2].ToUpper());
                     
-                    bool dentroLimites = Area.PosicaoValida(x, y, areaX, areaY);
+                    bool dentroLimites = area.PosicaoValida(x, y);
                     bool orientacaoValida = (orientacao == 'N' || orientacao == 'S' || 
                                             orientacao == 'L' || orientacao == 'O');
                     
                     if (!dentroLimites)
                     {
-                        Console.WriteLine($"Posição fora dos limites da área! A área vai de (0,0) até ({areaX},{areaY}). Digite novamente:");
+                        Console.WriteLine($"Posição fora dos limites da área! A área vai de (0,0) até ({area.LimiteX},{area.LimiteY}). Digite novamente:");
                     }
                     else if (!orientacaoValida)
                     {
@@ -62,13 +173,15 @@ namespace RoboTupiniquim.ConsoleApp
                 }
             }
             
-            return (x, y, orientacao);
+            return new Robo(nome, x, y, orientacao);
         }
         
         public static string LerInstrucoesValidas()
         {
             bool instrucoesValidas = false;
             string instrucoes = "";
+            
+            Console.WriteLine("Instruções (M = mover, E = virar à esquerda, D = virar à direita):");
             
             while (!instrucoesValidas)
             {
@@ -95,102 +208,6 @@ namespace RoboTupiniquim.ConsoleApp
             }
             
             return instrucoes;
-        }
-        
-        public static bool ExecutarInstrucoes(ref int x, ref int y, ref char orientacao, string instrucoes, int limiteX, int limiteY)
-        {
-            bool dentroLimites = true;
-            
-            foreach (char instrucao in instrucoes)
-            {
-                switch (instrucao)
-                {
-                    case 'M':
-                        dentroLimites = MoverParaFrente(ref x, ref y, orientacao, limiteX, limiteY) && dentroLimites;
-                        break;
-                    case 'E':
-                        VirarEsquerda(ref orientacao);
-                        break;
-                    case 'D':
-                        VirarDireita(ref orientacao);
-                        break;
-                    default:
-                        break;
-                }
-            }
-            
-            return dentroLimites;
-        }
-        
-        public static bool MoverParaFrente(ref int x, ref int y, char orientacao, int limiteX, int limiteY)
-        {
-            int novoX = x;
-            int novoY = y;
-            
-            switch (orientacao)
-            {
-                case 'N':
-                    novoY++;
-                    break;
-                case 'S':
-                    novoY--;
-                    break;
-                case 'L':
-                    novoX++;
-                    break;
-                case 'O':
-                    novoX--;
-                    break;
-            }
-            
-            bool posicaoValida = Area.PosicaoValida(novoX, novoY, limiteX, limiteY);
-            
-            if (posicaoValida)
-            {
-                x = novoX;
-                y = novoY;
-                return true;
-            }
-            
-            return false;
-        }
-        
-        public static void VirarEsquerda(ref char orientacao)
-        {
-            switch (orientacao)
-            {
-                case 'N':
-                    orientacao = 'O';
-                    break;
-                case 'O':
-                    orientacao = 'S';
-                    break;
-                case 'S':
-                    orientacao = 'L';
-                    break;
-                case 'L':
-                    orientacao = 'N';
-                    break;
-            }
-        }
-        
-        public static void VirarDireita(ref char orientacao)
-        {
-            switch (orientacao)
-            {
-                case 'N':
-                    orientacao = 'L';
-                    break;
-                case 'L':
-                    orientacao = 'S';
-                    break;
-                case 'S':
-                    orientacao = 'O';
-                    break;
-                case 'O':
-                    orientacao = 'N';
-                    break;
-            }
         }
     }
 } 
