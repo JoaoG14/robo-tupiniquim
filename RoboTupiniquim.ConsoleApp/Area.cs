@@ -2,9 +2,26 @@ using System;
 
 namespace RoboTupiniquim.ConsoleApp
 {
-    public static class Area
+    public class Area
     {
-        public static (int limiteX, int limiteY) LerDimensoesValidas()
+        public int LimiteX { get; private set; }
+        public int LimiteY { get; private set; }
+
+        public Area(int limiteX, int limiteY)
+        {
+            if (limiteX <= 0 || limiteY <= 0)
+                throw new ArgumentException("As dimensões da área devem ser maiores que zero.");
+
+            LimiteX = limiteX;
+            LimiteY = limiteY;
+        }
+
+        public bool PosicaoValida(int x, int y)
+        {
+            return x >= 0 && x <= LimiteX && y >= 0 && y <= LimiteY;
+        }
+
+        public static Area LerDimensoes()
         {
             int areaX = 0, areaY = 0;
             bool dimensoesValidas = false;
@@ -40,12 +57,7 @@ namespace RoboTupiniquim.ConsoleApp
                 }
             }
             
-            return (areaX, areaY);
-        }
-
-        public static bool PosicaoValida(int x, int y, int limiteX, int limiteY)
-        {
-            return x >= 0 && x <= limiteX && y >= 0 && y <= limiteY;
+            return new Area(areaX, areaY);
         }
     }
 } 
